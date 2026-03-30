@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <sqlite3.h>
+
+int main() {
+  sqlite3 *db;
+  sqlite3_stmt *stmt;
+
+  sqlite3_open("cars.db", &db);
+  sqlite3_prepare(db, "SELECT * FROM Cars;", -1, &stmt, NULL);
+
+  while (sqlite3_step(stmt) != SQLITE_DONE) {
+    int num_cols = sqlite3_column_count(stmt);
+
+    for (int i = 0; i < num_cols; i++) {
+      switch (sqlite3_column_type(stmt, i)) {
+        case (SQLITE3_TEXT):
+          printf("%s, ", sqlite3_column_text(stmt, i));
+          break;
+        case (SQLITE_INTEGER):
+          printf("%d, ", sqlite3_column_int(stmt, i));
+          break;
+        case (SQLITE_FLOAT):
+          printf("%g, ", sqlite3_column_double(stmt, i));
+          break;
+        default:
+          break;
+      }
+    }
+    printf("\n");
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+return 0;
+}
