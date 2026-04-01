@@ -1,35 +1,76 @@
 #include <stdio.h>
 #include <sqlite3.h>
 
-int main() {
+int display_data(
+  void *param,
+  int argc, 
+  char **argv, 
+  char **columns
+) 
+{
+  for (int i = 0; i< argc; i++)
+  {
+    printf("%s, ", argv[i]);
+  }
+  printf("\n");
+  return 0;
+}
+
+int main() 
+{
   sqlite3 *db;
   sqlite3_stmt *stmt;
+  char *errmsg = 0;
+  int action = 0;
+  bool loop = true;
 
   sqlite3_open("cars.db", &db);
-  sqlite3_prepare(db, "SELECT * FROM Cars;", -1, &stmt, NULL);
 
-  while (sqlite3_step(stmt) != SQLITE_DONE) {
-    int num_cols = sqlite3_column_count(stmt);
+  while (loop)
+  {
+    printf(
+      "\n"
+      "What would you like to do?\n"
+      "1. Display Cars\n"
+      "2. Display Buyers\n"
+      "3. Create new purchase\n"
+      "4. Quit\n"
+    );
 
-    for (int i = 0; i < num_cols; i++) {
-      switch (sqlite3_column_type(stmt, i)) {
-        case (SQLITE3_TEXT):
-          printf("%s, ", sqlite3_column_text(stmt, i));
-          break;
-        case (SQLITE_INTEGER):
-          printf("%d, ", sqlite3_column_int(stmt, i));
-          break;
-        case (SQLITE_FLOAT):
-          printf("%g, ", sqlite3_column_double(stmt, i));
-          break;
-        default:
-          break;
-      }
-    }
+    scanf("%d", &action);
     printf("\n");
+
+    switch (action)
+    {
+      case 1:
+        if (sqlite3_exec(db, "SELECT * FROM Cars;", display_data, 0, &errmsg) != SQLITE_OK)
+        {
+          fprintf(stderr, "%s", errmsg);
+          sqlite3_free(errmsg);
+        }
+        break;
+
+      case 2:
+        if (sqlite3_exec(db, "SELECT * FROM Buyers;", display_data, 0, &errmsg) != SQLITE_OK)
+        {
+          fprintf(stderr, "%s", errmsg);
+          sqlite3_free(errmsg);
+        }
+        break;
+
+      case 3:
+        break
+
+      case 4:
+        loop = false;
+        break;
+
+      default:
+        printf("Enter a valid input");
+        break;
+    }
   }
 
-  sqlite3_finalize(stmt);
   sqlite3_close(db);
 
 return 0;
