@@ -6,28 +6,39 @@ int display_data(
   int argc, 
   char **argv, 
   char **columns
-) 
-{
-  for (int i = 0; i< argc; i++)
-  {
+) {
+  int *first_call = (int*)param;
+
+  if (*first_call) {
+    for (int i = 0; i < argc - 1; i++) {
+      printf("%s, ", columns[i]);
+    }
+
+    printf("%s\n", columns[argc - 1]);
+    *first_call = 0;
+  }
+
+  for (int i = 0; i < argc - 1; i++) {
     printf("%s, ", argv[i]);
   }
-  printf("\n");
+  
+  printf("%s\n", argv[argc - 1]);
   return 0;
 }
 
-int main() 
-{
+int main() {
   sqlite3 *db;
   sqlite3_stmt *stmt;
   char *errmsg = 0;
+
   int action = 0;
-  bool loop = true;
+
+  int loop = 1;
+  int first_call = 1;
 
   sqlite3_open("cars.db", &db);
 
-  while (loop)
-  {
+  while (loop) {
     printf(
       "\n"
       "What would you like to do?\n"
@@ -40,33 +51,32 @@ int main()
     scanf("%d", &action);
     printf("\n");
 
-    switch (action)
-    {
+    switch (action) {
       case 1:
-        if (sqlite3_exec(db, "SELECT * FROM Cars;", display_data, 0, &errmsg) != SQLITE_OK)
-        {
+        if (sqlite3_exec(db, "SELECT Cars.*, Stock.stock FROM Cars JOIN Stock ON Cars.id = Stock.car_id;", display_data, &first_call, &errmsg) != SQLITE_OK) {
           fprintf(stderr, "%s", errmsg);
           sqlite3_free(errmsg);
         }
+        first_call = 1;
         break;
 
       case 2:
-        if (sqlite3_exec(db, "SELECT * FROM Buyers;", display_data, 0, &errmsg) != SQLITE_OK)
-        {
+        if (sqlite3_exec(db, "SELECT * FROM Buyers;", display_data, &first_call, &errmsg) != SQLITE_OK) {
           fprintf(stderr, "%s", errmsg);
           sqlite3_free(errmsg);
         }
+        first_call = 1;
         break;
 
       case 3:
-        break
+        break;
 
       case 4:
-        loop = false;
+        loop = 0;
         break;
 
       default:
-        printf("Enter a valid input");
+        printf("Enter a valid input\n");
         break;
     }
   }
