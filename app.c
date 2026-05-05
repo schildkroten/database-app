@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <sqlite3.h>
 
 int display_data(
@@ -31,10 +32,16 @@ int main() {
   sqlite3_stmt *stmt;
   char *errmsg = 0;
 
-  int action = 0;
+  int action;
 
   int loop = 1;
   int first_call = 1;
+
+  char date = '0';
+  char quit = 'n';
+  int buyer_id = 0;
+  int car_id = 0;
+  int price = 0;
 
   sqlite3_open("cars.db", &db);
 
@@ -69,6 +76,34 @@ int main() {
         break;
 
       case 3:
+        printf("What is the buyer id? (enter 0 to cancel)\n");
+        scanf("%d", &buyer_id);
+
+        if (buyer_id < 1) break;
+
+        printf("\nWhat is the car id? (enter 0 to cancel)\n");
+        scanf("%d", &car_id);
+
+        if (car_id < 1) break;
+
+        printf("\nWhat is the price? (enter 0 to cancel)\n");
+        scanf("%d", &price);
+
+        if (price < 1) break;
+
+        printf("\nWhat was the date of purchase? (format dd-mm-yyyy, enter 0 to cancel)\n");
+        scanf("%s", &date);
+
+        if (strcmp(&date, "0") == 0) break;
+
+        printf("\nIs this the purchase you would like to insert? y/n (enter 0 to cancel)\n");
+        printf("buyer_id: %d, car_id: %d, price: %d, date: %s\n", buyer_id, car_id, price, &date);
+        scanf("%s", &quit);
+
+        if (strcmp(&quit, "y") != 0) break;
+
+        printf("%s\n", &quit);
+
         break;
 
       case 4:
