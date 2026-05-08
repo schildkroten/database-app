@@ -1,0 +1,72 @@
+using Gtk 4.0;
+
+template $DatabaseAppWindow : Gtk.ApplicationWindow {
+  CenterBox {
+    orientation: vertical;
+
+    start-widget: Box {
+      halign: center;
+      valign: center;
+      vexpand: true;
+      spacing: 15;
+
+      Box {
+        orientation: vertical;
+        Label { label: "Cars"; }
+        Label cars_table {}
+      }
+
+      Box {
+        orientation: vertical;
+        Label { label: "Buyers"; }
+        Label buyers_table {}
+      }
+    };
+    
+    center-widget: Box {
+      halign: center;
+      valign: center;
+      vexpand: true;
+      spacing: 5;
+
+      Box {
+        orientation: vertical;
+        Label { label: "Car id"; }
+        SpinButton car_id_entry {}
+      }
+
+      Box {
+        orientation: vertical;
+        Label { label: "Buyer id"; }
+        SpinButton buyer_id_entry {}
+      }
+
+      Box {
+        orientation: vertical;
+        Label { label: "Price"; }
+        SpinButton price_entry {}
+      }
+
+      Box {
+        orientation: vertical;
+        Label { label: "Date"; }
+        Entry date_entry {
+          editable: false;
+        }
+      }
+
+      Button {
+        label: "Insert Purchase";
+        clicked => $insert_purchase();
+      }
+    };
+
+    end-widget: Box {
+      halign: center;
+      valign: start;
+      hexpand: true;
+      vexpand: true;
+      Label purchases_table {}
+    };
+  }
+}
